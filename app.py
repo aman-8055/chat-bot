@@ -4,8 +4,9 @@ from transformers import pipeline
 def generate_response(input_text, chat_history):
     chatbot_model = pipeline("text-generation", model="microsoft/DialoGPT-medium")
     chat_history.append(input_text)
-    response = chatbot_model(chat_history)[0]['generated_text']
-    return response
+    response = chatbot_model(chat_history)
+    generated_text = response[0]['generated_text']
+    return generated_text
 
 def chat():
     st.title("Ka Chatbot")
