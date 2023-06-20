@@ -1,12 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='ka-chatbot',
-    version='1.0',
-    author='Your Name',
-    author_email='your_email@example.com',
-    description='Chatbot using Streamlit',
+    name='question-answering-chatbot',
+    version='1.0.0',
     packages=find_packages(),
+    include_package_data=True,
     install_requires=[
         'streamlit',
         'torch',
