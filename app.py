@@ -1,27 +1,39 @@
 import streamlit as st
-from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForQuestionAnswering
 
-def generate_response(input_text, chat_history):
-    chatbot_model = pipeline("text-generation", model="microsoft/DialoGPT-medium")
-    chat_history.append(input_text)
-    response = chatbot_model(chat_history, max_length=100)[0]
-    generated_text = response['generated_text']
-    return generated_text
+# Load pre-trained model and tokenizer
+model_name = "distilbert-base-uncased-distilled-squad"  # Replace with your desired model
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForQuestionAnswering.from_pretrained(model_name)
 
-def chat():
-    st.title("Ka Chatbot")
-    st.write("Welcome! I'm Ka, your friendly chatbot. How can I assist you today?")
+# Streamlit app code
+def answer_question(context, question):
+    inputs = tokenizer.encode_plus(question, context, add_special_tokens=True, return_tensors="pt")
+    input_ids = inputs["input_ids"].tolist()[0]
 
-    chat_history = []
+    # Get the start and end logits for the answer
+    with torch.no_grad():
+        start_logits, end_logits = model(**inputs).logits
 
-    while True:
-        user_input = st.text_input("User:")
-        if user_input.lower() in ["exit", "quit"]:
-            st.write("Ka: Goodbye! Have a great day!")
-            break
+    start_index = torch.argmax(start_logits, dim=1).item()
+    end_index = torch.argmax(end_logits, dim=1).item()
 
-        response = generate_response(user_input, chat_history)
-        chat_history.append(user_input)
-        st.write("Ka:", response)
+    # Convert the token IDs back to text
+    answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(input_ids[start_index:end_index+1]))
 
-chat()
+    return answer
+
+def main():
+    st.title("Question Answering Chatbot")
+    context = st.text_area("Context:", "Enter the context here...")
+    question = st.text_input("Question:", "Enter your question here...")
+
+    if st.button("Answer"):
+        if context and question:
+            answer = answer_question(context, question)
+            st.write("Answer:", answer)
+        else:
+            st.write("Please enter both context and question.")
+
+if __name__ == "__main__":
+    main()
