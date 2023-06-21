@@ -1,5 +1,6 @@
 import streamlit as st
 from transformers import AutoTokenizer, AutoModelForQuestionAnswering
+import torch
 
 @st.cache(allow_output_mutation=True)
 def load_model():
@@ -34,4 +35,5 @@ def main():
             st.write("Please enter a question.")
 
 if __name__ == "__main__":
+    torch.set_num_threads(1)
     main()
