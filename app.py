@@ -3,7 +3,7 @@ from transformers import AutoTokenizer, AutoModelForQuestionAnswering
 
 @st.cache(allow_output_mutation=True)
 def load_model():
-    model_name = "shivam001/dei-q-and-a"
+    model_name = "shivam001/deibotquestion"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForQuestionAnswering.from_pretrained(model_name)
     return tokenizer, model
