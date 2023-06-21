@@ -2,7 +2,7 @@ import streamlit as st
 from transformers import AutoTokenizer, AutoModelForQuestionAnswering
 import torch
 
-@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True, hash_funcs={"torch.nn.modules.sparse": hash})
 def load_model():
     model_name = "shivam001/deibotquestion"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
